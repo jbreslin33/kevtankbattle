@@ -1,0 +1,101 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Tanks/Tank.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Tanks/EnemyTank.gd" type="Script" id=2]
+[ext_resource path="res://Tanks/Enemy Bullet.tscn" type="PackedScene" id=3]
+[ext_resource path="res://assets/onlyObjects_retina_rotated.png" type="Texture" id=4]
+
+[sub_resource type="RectangleShape2D" id=1]
+
+custom_solver_bias = 0.0
+extents = Vector2( 33, 41 )
+
+[sub_resource type="CircleShape2D" id=2]
+
+custom_solver_bias = 0.0
+radius = 511.575
+
+[node name="Enemy Tank" instance=ExtResource( 1 )]
+
+collision_layer = 4
+collision_mask = 3
+script = ExtResource( 2 )
+_sections_unfolded = [ "Collision" ]
+Bullet = ExtResource( 3 )
+max_speed = 200
+rotation_speed = 1.5
+gun_cooldown = 1.0
+max_health = 50
+turret_speed = 1.0
+detect_radius = 400
+
+[node name="Hull" parent="." index="0"]
+
+texture = ExtResource( 4 )
+region_enabled = true
+region_rect = Rect2( 268, 186, 80, 76 )
+_sections_unfolded = [ "Region", "Transform" ]
+
+[node name="CollisionShape2D" parent="." index="1"]
+
+rotation = -1.5708
+shape = SubResource( 1 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="Turret" parent="." index="2"]
+
+texture = ExtResource( 4 )
+offset = Vector2( 20, 0 )
+region_enabled = true
+region_rect = Rect2( 452, 34, 60, 24 )
+_sections_unfolded = [ "Offset", "Transform" ]
+
+[node name="Muzzle" parent="Turret" index="0"]
+
+position = Vector2( 55, 0 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="DetectRadius" type="Area2D" parent="." index="4"]
+
+input_pickable = true
+gravity_vec = Vector2( 0, 1 )
+gravity = 98.0
+linear_damp = 0.1
+angular_damp = 1.0
+audio_bus_override = false
+audio_bus_name = "Master"
+_sections_unfolded = [ "Visibility" ]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectRadius" index="0"]
+
+shape = SubResource( 2 )
+
+[node name="LookAhead1" type="RayCast2D" parent="." index="5"]
+
+position = Vector2( 0, 30 )
+rotation = -1.5708
+enabled = true
+exclude_parent = true
+cast_to = Vector2( 0, 100 )
+collision_mask = 7
+_sections_unfolded = [ "Transform" ]
+
+[node name="LookAhead2" type="RayCast2D" parent="." index="6"]
+
+position = Vector2( 0, -30 )
+rotation = -1.5708
+enabled = true
+exclude_parent = true
+cast_to = Vector2( 0, 100 )
+collision_mask = 7
+_sections_unfolded = [ "Transform" ]
+
+[connection signal="shoot" from="." to="." method="_on_Enemy_Tank_shoot"]
+
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+
+[connection signal="body_entered" from="DetectRadius" to="." method="_on_DetectRadius_body_entered"]
+
+[connection signal="body_exited" from="DetectRadius" to="." method="_on_DetectRadius_body_exited"]
+
+
